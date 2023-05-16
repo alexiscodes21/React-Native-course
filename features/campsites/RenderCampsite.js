@@ -1,9 +1,8 @@
 import { useRef } from "react";
-import { StyleSheet, Text, View, PanResponder, Alert } from "react-native";
+import { StyleSheet, Text, View, PanResponder, Alert, Share } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { baseUrl } from "../../shared/baseUrl";
 import * as Animatable from "react-native-animatable";
-import { handleSubmit } from "../../screens/CampsiteInfoScreen";
 
 const RenderCampsite = (props) => {
   const { campsite } = props;
@@ -38,10 +37,23 @@ const RenderCampsite = (props) => {
           { cancelable: false }
         );
       } else if (isRightSwipe(gestureState)) {
-        props.onShowModal()
+        props.onShowModal();
       }
     },
   });
+
+  const shareCampsite = (title, message, url) => {
+    Share.share(
+      {
+        title,
+        message: `${title}: ${message} ${url}`,
+        url,
+      },
+      {
+        dialogTitle: "Share " + title,
+      }
+    );
+  };
 
   if (campsite) {
     return (
@@ -63,6 +75,14 @@ const RenderCampsite = (props) => {
               onPress={() => (props.isFavorite ? console.log("Already set as a favorite") : props.markFavorite())}
             />
             <Icon name="pencil" type="font-awesome" color="#5637DD" raised reverse onPress={props.onShowModal} />
+            <Icon
+              name="share"
+              type="font-awesome"
+              color="#5637DD"
+              raised
+              reverse
+              onPress={() => shareCampsite(campsite.name, campsite.description, baseUrl + campsite.image)}
+            />
           </View>
         </Card>
       </Animatable.View>
